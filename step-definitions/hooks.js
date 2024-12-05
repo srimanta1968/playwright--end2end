@@ -23,7 +23,7 @@ setDefaultTimeout(60 * 1000);
 BeforeAll(async function () {
   console.log("Launching browser...");
   browser = await chromium.launch({
-    headless: true, // Run in headless mode
+    headless: false, // Run in headless mode
     timeout: timeout,
   });
   context = await browser.newContext();
