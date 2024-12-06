@@ -50,8 +50,12 @@ Before(async function (scenario) {
 });
 
 After(async function (scenario) {
-  // Track scenario results
-  switch (scenario.result.status) {
+  console.log(
+    `Scenario "${scenario.pickle.name}" status: ${scenario.result.status}`
+  );
+
+  // Track scenario results with case handling
+  switch (scenario.result.status.toLowerCase()) {
     case "passed":
       scenarioCounts.passed += 1;
       break;
@@ -91,7 +95,10 @@ AfterAll(async function () {
   }
 
   // Write the scenario counts to a JSON file
-  const reportPath = path.resolve(__dirname, "reports/scenario-summary.json");
+  const reportPath = path.resolve(
+    __dirname,
+    "../reports/scenario-summary.json"
+  );
   fs.writeFileSync(reportPath, JSON.stringify(scenarioCounts, null, 2));
   console.log(`Scenario summary written to ${reportPath}`);
 });
