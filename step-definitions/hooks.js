@@ -16,10 +16,17 @@ const exec = require("child_process").exec;
 // Set a global timeout of 60 seconds for all steps
 setDefaultTimeout(60 * 1000);
 
+// Variables to track scenario counts
+let scenarioCounts = {
+  total: 0,
+  passed: 0,
+  failed: 0,
+  skipped: 0,
+};
+
 /**
  * [this will run before all the tests scripts starts executing]
  */
-
 BeforeAll(async function () {
   console.log("Launching browser...");
   browser = await chromium.launch({
@@ -38,22 +45,23 @@ Before(async function (scenario) {
     featureName = scenario.gherkinDocument.feature.name;
     console.log(`\n ${featureName}`);
   }
+  // Increment the total scenario count
+  scenarioCounts.total += 1;
 });
 
-AfterAll(async function () {
-  if (typeof page !== "undefined") {
-    await page.close();
-  }
-  if (typeof context !== "undefined") {
-    await context.close();
-  }
-  if (typeof browser !== "undefined") {
-    await browser.close();
-  }
-});
-
-// After each scenario executed, it will attach the screenshots
 After(async function (scenario) {
+  // Track scenario results
+  switch (scenario.result.status) {
+    case "passed":
+      scenarioCounts.passed += 1;
+      break;
+    case "failed":
+      scenarioCounts.failed += 1;
+      break;
+    default:
+      scenarioCounts.skipped += 1;
+  }
+
   let screenshot;
   if (typeof page !== "undefined") {
     screenshot = await page.screenshot({
@@ -69,4 +77,21 @@ After(async function (scenario) {
   timestamp = date.substr(0, date.lastIndexOf("."));
 
   await this.attach(`${timestamp} on branch ${branch} with commit ${commit}`);
+});
+
+AfterAll(async function () {
+  if (typeof page !== "undefined") {
+    await page.close();
+  }
+  if (typeof context !== "undefined") {
+    await context.close();
+  }
+  if (typeof browser !== "undefined") {
+    await browser.close();
+  }
+
+  // Write the scenario counts to a JSON file
+  const reportPath = path.resolve(__dirname, "reports/scenario-summary.json");
+  fs.writeFileSync(reportPath, JSON.stringify(scenarioCounts, null, 2));
+  console.log(`Scenario summary written to ${reportPath}`);
 });
