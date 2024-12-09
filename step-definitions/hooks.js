@@ -16,13 +16,15 @@ const exec = require("child_process").exec;
 // Set a global timeout of 60 seconds for all steps
 setDefaultTimeout(60 * 1000);
 
-// Variables to track scenario counts
+// Variables to track scenario counts and failed scenarios
 let scenarioCounts = {
   total: 0,
   passed: 0,
   failed: 0,
   skipped: 0,
 };
+
+let failedScenarios = [];
 
 /**
  * [this will run before all the tests scripts starts executing]
@@ -54,13 +56,20 @@ After(async function (scenario) {
     `Scenario "${scenario.pickle.name}" status: ${scenario.result.status}`
   );
 
-  // Track scenario results with case handling
+  // Track scenario results and capture details for failed scenarios
   switch (scenario.result.status.toLowerCase()) {
     case "passed":
       scenarioCounts.passed += 1;
       break;
     case "failed":
       scenarioCounts.failed += 1;
+      failedScenarios.push({
+        scenario: scenario.pickle.name,
+        step: scenario.pickle.steps.map((step) => step.text).join(", "),
+        reason: scenario.result.exception
+          ? scenario.result.exception.message
+          : "Unknown reason",
+      });
       break;
     default:
       scenarioCounts.skipped += 1;
@@ -101,4 +110,9 @@ AfterAll(async function () {
   );
   fs.writeFileSync(reportPath, JSON.stringify(scenarioCounts, null, 2));
   console.log(`Scenario summary written to ${reportPath}`);
+
+  // Write failed scenarios to a JSON file
+  const failuresPath = path.resolve(__dirname, "../reports/failures.json");
+  fs.writeFileSync(failuresPath, JSON.stringify(failedScenarios, null, 2));
+  console.log(`Failed scenarios written to ${failuresPath}`);
 });
