@@ -55,6 +55,10 @@ Then("I receive a successful order placed message", async function () {
   await expect(page.locator("#message")).toBeVisible();
 });
 
-And("I made this step to fail", async function () {
+Then("I made this step to fail", async function () {
   await expect(2).toBeGreaterThan(3); // This assertion will fail
+});
+
+Then("Found zipcode invalid", async function () {
+  await expect(a3567).toBeGreaterThan(3); // This assertion will fail
 });
