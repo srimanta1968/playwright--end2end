@@ -20,10 +20,10 @@ build/Release
 node_modules/
 
 # Reports 
-#index.html
-#*.html
-#reports/
-#screenshots/
+index.html
+*.html
+reports/
+screenshots/
 
 
 
