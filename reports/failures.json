@@ -1,0 +1,12 @@
+[
+  {
+    "scenario": "Submit the shipping order form to fail",
+    "step": "I made this step to fail",
+    "reason": "\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m3\u001b[39m\nReceived:   \u001b[31m2\u001b[39m"
+  },
+  {
+    "scenario": "invalid zipcode test to fail",
+    "step": "Found zipcode invalid, I made this step to fail",
+    "reason": "a3567 is not defined"
+  }
+]
